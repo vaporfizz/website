@@ -32,3 +32,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTIONID }}
           # Set this value to true to enable Azure PowerShell Login in addition to Az CLI login
           enable-AzPSSession: true
+          
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: ${{ secrets.AZURE_CREDENTIALS }}
