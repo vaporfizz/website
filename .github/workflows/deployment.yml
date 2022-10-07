@@ -29,4 +29,8 @@ jobs:
           # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
-          
+      
+      - uses: Azure/cli@v1
+        with:
+          # Specify the script here
+          inlineScript: az deployment group create -g rg-website --template-file $GITHUB_WORKSPACE/infrastructure/infrastructure.bicep
