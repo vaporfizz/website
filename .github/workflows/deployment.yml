@@ -32,18 +32,3 @@ jobs:
           subscription-id: ${{secrets.AZURE_SUBSCRIPTIONID}}
           # Set this value to true to enable Azure PowerShell Login in addition to Az CLI login
           enable-AzPSSession: true
-          
-      - uses: Azure/cli@v1
-        with:
-          # Specify the script here
-          inlineScript: az deployment group create -g rg-website --template-file $GITHUB_WORKSPACE/infrastructure/infrastructure.bicep
-      
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
