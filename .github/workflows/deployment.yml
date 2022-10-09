@@ -56,4 +56,4 @@ jobs:
       - uses: Azure/cli@v1
         with: 
           # Specify the script here
-          inlineScript: az cdn endpoint purge -n cdn-endpoint-vaporfizzweb-${{ steps.bicep.outputs.environment }} --profile-name -n cdn-vaporfizzweb-${{ steps.bicep.outputs.environment }} -g ${{ secrets.AZURE_RESOURCE_GROUP }} --content-paths "/*"
+          inlineScript: az cdn endpoint purge -n cdn-endpoint-vaporfizzweb-${{ steps.bicep.outputs.environment }} --profile-name cdn-vaporfizzweb-${{ steps.bicep.outputs.environment }} -g ${{ secrets.AZURE_RESOURCE_GROUP }} --content-paths "/*"
