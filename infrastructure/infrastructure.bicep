@@ -39,7 +39,7 @@ resource cdnProfile 'Microsoft.Cdn/profiles@2022-05-01-preview' = {
   }
 
   resource endpoint 'endpoints@2022-05-01-preview' = {
-    name: 'cdn-endpoint-ms-vaporfizzweb-${environment}'
+    name: 'cdn-endpoint-vaporfizzweb-${environment}'
     location: location
     properties: {
       contentTypesToCompress: [
