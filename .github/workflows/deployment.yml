@@ -31,6 +31,19 @@ jobs:
           enable-AzPSSession: true
       
       - uses: Azure/cli@v1
-        with:
+        id: bicep
+        with: 
           # Specify the script here
-          inlineScript: az deployment group create -g rg-website --template-file $GITHUB_WORKSPACE/infrastructure/infrastructure.bicep
+          inlineScript: |
+            $environment=$(az deployment group create -g rg-website --template-file $GITHUB_WORKSPACE/infrastructure/infrastructure.bicep --query properties.outputs.environment.value)
+            echo "::set-output name=environmentName::$environmentName"
+        
+      - uses: Azure/powershell@v1
+        with:
+          # Specify the Az PowerShell script here.
+          inlineScript: $GITHUB_WORKSPACE/infrastructure/dataplane_setup.ps1 -Environment ${{ steps.bicep.outputs.environment }} -ResourceGroupName rg-website
+          # Azure PS version to be used to execute the script, example: 1.8.0, 2.8.0, 3.4.0. To use the latest version, specify "latest".
+          azPSVersion: latest
+          # If this is true, this task will fail if any errors are written to the error pipeline, or if any data is written to the Standard Error stream.
+          failOnStandardError: true
+          
