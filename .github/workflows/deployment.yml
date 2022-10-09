@@ -36,7 +36,7 @@ jobs:
           # Specify the script here
           inlineScript: |
             environment=$(az deployment group create -g rg-website --template-file $GITHUB_WORKSPACE/infrastructure/infrastructure.bicep --query properties.outputs.environment.value)
-            echo "::set-output name=environmentName::$environment"
+            echo "::set-output name=environment::$environment"
         
       - uses: Azure/powershell@v1
         with:
