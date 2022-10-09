@@ -48,3 +48,8 @@ jobs:
           # If this is true, this task will fail if any errors are written to the error pipeline, or if any data is written to the Standard Error stream.
           failOnStandardError: true
           
+      - uses: Azure/cli@v1
+        with: 
+          # Specify the script here
+          inlineScript: az storage blob sync -c $web -s $GITHUB_WORKSPACE/src --account-name stvfizzweb${{ steps.bicep.outputs.environment }}
+          
