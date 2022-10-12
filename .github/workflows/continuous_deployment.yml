@@ -30,14 +30,6 @@ jobs:
           inlineScript: |
             environment=$(az deployment group create -g ${{ secrets.AZURE_RESOURCE_GROUP }} --template-file $GITHUB_WORKSPACE/iac/infrastructure.bicep --query properties.outputs.environment.value)
             echo "::set-output name=environment::$environment"
-        
-      - name: Deploy data plane settings to Azure
-        uses: Azure/powershell@v1
-        with:
-          inlineScript: |
-            & "$env:GITHUB_WORKSPACE/iac/dataplane_setup.ps1" -Environment ${{ steps.bicep.outputs.environment }} -ResourceGroupName ${{ secrets.AZURE_RESOURCE_GROUP }}
-          azPSVersion: latest
-          failOnStandardError: true
           
       - name: Sync website to Azure Storage Account
         uses: Azure/cli@v1
