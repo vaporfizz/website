@@ -1,0 +1,50 @@
+# GitHub Actions for continuous deployment of VaporFizz website
+name: Continuous Deployment
+
+on:
+  push:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: Production
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Azure
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+      
+      - name: Deploy Bicep to Azure infrastructure
+        uses: Azure/cli@v1
+        id: bicep
+        with: 
+          inlineScript: |
+            environment=$(az deployment group create -g ${{ secrets.AZURE_RESOURCE_GROUP }} --template-file $GITHUB_WORKSPACE/iac/infrastructure.bicep --query properties.outputs.environment.value)
+            echo "::set-output name=environment::$environment"
+        
+      - name: Deploy data plane settings to Azure
+        uses: Azure/powershell@v1
+        with:
+          inlineScript: |
+            & "$env:GITHUB_WORKSPACE/iac/dataplane_setup.ps1" -Environment ${{ steps.bicep.outputs.environment }} -ResourceGroupName ${{ secrets.AZURE_RESOURCE_GROUP }}
+          azPSVersion: latest
+          failOnStandardError: true
+          
+      - name: Sync website to Azure Storage Account
+        uses: Azure/cli@v1
+        with: 
+          inlineScript: az storage blob sync -c "\$web" -s $GITHUB_WORKSPACE/src --account-name stvfizzweb${{ steps.bicep.outputs.environment }}
+
+      - name: Purge Azure CDN
+        uses: Azure/cli@v1
+        with: 
+          inlineScript: az cdn endpoint purge -n cdn-endpoint-vaporfizzweb-${{ steps.bicep.outputs.environment }} --profile-name cdn-vaporfizzweb-${{ steps.bicep.outputs.environment }} -g ${{ secrets.AZURE_RESOURCE_GROUP }} --content-paths "/*"
