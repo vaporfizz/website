@@ -21,16 +21,15 @@ jobs:
         uses: Azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-          enable-AzPSSession: true
-      
-      - name: Deploy Bicep to Azure infrastructure
+
+      - name: Deploy Bicep to Azure
         uses: Azure/cli@v1
         id: bicep
         with: 
           inlineScript: |
             environment=$(az deployment group create -g ${{ secrets.AZURE_RESOURCE_GROUP }} --template-file $GITHUB_WORKSPACE/iac/infrastructure.bicep --query properties.outputs.environment.value)
             echo "::set-output name=environment::$environment"
-          
+
       - name: Sync website to Azure Storage Account
         uses: Azure/cli@v1
         with: 
